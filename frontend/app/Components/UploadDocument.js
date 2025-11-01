@@ -2,6 +2,7 @@ export default function UploadDocument({ handleFileChange, submitFile, loading }
     return (
       <div className="flex items-center justify-center w-full gap-4 mb-8">
         <input
+          accept=".txt"
           type="file"
           name="file"
           onChange={handleFileChange}

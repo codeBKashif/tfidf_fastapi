@@ -50,12 +50,21 @@ async def ingest(file: UploadFile, background_tasks: BackgroundTasks) -> IngestR
         
 
     term_freq = Counter()
+    remainder = ""
 
     try:
         while chunk := await file.read(CHUNK_SIZE):          
 
             text = chunk.decode("utf-8")
-            tokens = tokenize(text)
+            text = remainder + text
+
+            tokens, remainder = tokenize(text)
+            term_freq.update(tokens)
+        
+        if remainder:
+            logger.info(f"Remaining text: {remainder}")
+            
+            tokens, _ = tokenize(remainder)
             term_freq.update(tokens)
 
         logger.info(f"Tokenized {len(term_freq)} tokens from {file.filename}")

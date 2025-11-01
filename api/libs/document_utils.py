@@ -1,13 +1,8 @@
 import math
 from sqlalchemy.dialects.sqlite import insert
-from models import get_session
-from models import DocumentStat, TermStat, Document
+from models import DocumentStat, TermStat, Document, get_session
 from sqlalchemy import func
-from logger import logger
-
-def tokenize(text: str) -> list[str]:
-    return [word.strip().lower() for word in text.split() if word.isalpha()]
-
+from .logger import logger
 
 def check_if_document_exists(name: str) -> bool:
     with get_session() as session:

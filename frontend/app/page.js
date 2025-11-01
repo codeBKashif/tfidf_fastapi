@@ -31,7 +31,6 @@ export default function Home() {
 
       const response = await api.post("/ingest", formData);
       toast.success(response.data.message);
-      setFile(null);
     } catch (error) {
       toast.error(error.response.data.detail || error.message || "An error occurred");
     } finally {

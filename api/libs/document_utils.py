@@ -13,6 +13,8 @@ def check_if_document_exists(name: str) -> bool:
 
 def ingest_new_document(name: str, term_freq: dict[str, int]) -> dict[str, float]:
 
+    logger.info(f"Starting ingesting new document {name} with {len(term_freq)} tokens")
+
     with get_session() as session:
         try:
 
@@ -33,9 +35,10 @@ def ingest_new_document(name: str, term_freq: dict[str, int]) -> dict[str, float
                 session.execute(stmt)
                 
             session.commit()
+            logger.info(f"Successfully ingested new document {name}")
         except Exception as e:
             session.rollback()
-            logger.error(f"Error ingesting document: {e}")
+            logger.error(f"Error ingesting document {name}: {e}")
             raise e
 
 

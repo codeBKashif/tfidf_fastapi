@@ -1,4 +1,4 @@
-from fastapi import UploadFile, File, HTTPException, APIRouter
+from fastapi import UploadFile, File, HTTPException, APIRouter, BackgroundTasks
 from collections import Counter
 
 from libs import (
@@ -37,7 +37,7 @@ def search(query: str) -> SearchResponse:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/ingest")
-async def ingest(file: UploadFile = File(...)) -> IngestResponse:
+async def ingest(file: UploadFile, background_tasks: BackgroundTasks) -> IngestResponse:
 
     if not file.filename.endswith(".txt"):
         raise HTTPException(status_code=400, detail="File must be a .txt file")
@@ -58,7 +58,10 @@ async def ingest(file: UploadFile = File(...)) -> IngestResponse:
             tokens = tokenize(text)
             term_freq.update(tokens)
 
-        ingest_new_document(file.filename, term_freq)
+        logger.info(f"Tokenized {len(term_freq)} tokens from {file.filename}")
+        logger.info("Pushing background task to ingest document")
+
+        background_tasks.add_task(ingest_new_document, file.filename, term_freq)
 
         return IngestResponse(message="File ingested successfully")
     
